@@ -1,11 +1,11 @@
 var http = require('http');
 var url = require('url');
 
-const { exec } = require('child_process');
+const exec  = require('child_process').exec;
 
 
 const command = function(cmd){
-	exec(cmd, (err, stdout, stderr) => {
+	exec(cmd, function(err, stdout, stderr){
 		if (err) {
 			console.error(err);
 			return;
@@ -15,7 +15,7 @@ const command = function(cmd){
 }
 
 http.createServer(function (req, res) {
-	let query =  url.parse(req.url, true).query;
+	var query =  url.parse(req.url, true).query;
 
 	var body = ''
 	req.on('data', function(chunck){
