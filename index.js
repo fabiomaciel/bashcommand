@@ -1,33 +1,31 @@
-var http = require('http');
-var url = require('url');
+const http = require('http'),
+	url = require('url');
 
 const exec  = require('child_process').exec;
 
-
-const command = function(cmd){
-	exec(cmd, function(err, stdout, stderr){
+const command = (cmd, res) =>{
+	exec(cmd, (err, stdout, stderr) =>{
 		if (err) {
 			console.error(err);
+			res.end(`ERROR: ${err}`)
 			return;
 		}
 		console.log(stdout);
+		res.end(stdout || '')
 	})
 }
 
-http.createServer(function (req, res) {
-	var query =  url.parse(req.url, true).query;
+http.createServer((req, res) => {
+	let query =  url.parse(req.url, true).query;
 
-	var body = ''
-	req.on('data', function(chunck){
+	let body = ''
+	req.on('data', (chunck) =>{
 		body += chunck
 	})
 
-	req.on('end', function(){
+	req.on('end', () =>{
 		body = JSON.parse(body)
-		command(body.command)
-		res.writeHead(200, {'Content-Type': 'text/html'});
-		res.end();
+		command(body.command, res)
+		res.writeHead(200, {'Content-Type': 'text/plain'});
 	})
-
-
 }).listen(4545);
